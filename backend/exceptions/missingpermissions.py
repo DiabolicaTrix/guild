@@ -1,0 +1,2 @@
+class MissingPermission(Exception):
+    pass

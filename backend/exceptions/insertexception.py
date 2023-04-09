@@ -1,0 +1,2 @@
+class InsertException(Exception):
+    pass
