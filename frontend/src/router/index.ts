@@ -1,15 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import auth from '../middlewares/auth'
-import HomeView from '../views/HomeView.vue'
+import AppWrapper from '../AppWrapper.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-    {
-      path: '/',
-      name: 'home',
-      component: HomeView
-    },
     {
       path: '/login',
       name: 'login',
@@ -21,15 +16,27 @@ const router = createRouter({
       component: () => import('../views/RegisterView.vue')
     },
     {
-      path: '/projects/:id',
-      name: 'project',
-      component: () => import('../views/projects/ProjectView.vue')
+      path: '/',
+      name: 'root',
+      component: AppWrapper,
+      children: [
+        {
+          path: '/',
+          name: 'home',
+          component: () => import('../views/HomeView.vue')
+        },
+        {
+          path: '/projects/:id',
+          name: 'project',
+          component: () => import('../views/projects/ProjectView.vue')
+        },
+        {
+          path: '/users/:id',
+          name: 'user',
+          component: () => import('../views/users/UserView.vue')
+        }
+      ]
     },
-    {
-      path: '/users/:id',
-      name: 'user',
-      component: () => import('../views/users/UserView.vue')
-    }
   ]
 })
 
