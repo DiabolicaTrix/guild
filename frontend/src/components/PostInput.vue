@@ -33,17 +33,4 @@ function submit() {
     flex-direction: column;
     gap: 16px;
 }
-
-textarea {
-    width: 100%;
-    height: 100px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    padding: 8px 8px;
-    box-sizing: border-box;
-    resize: none;
-
-    font-family: 'Roboto', sans-serif;
-    font-size: 18px;
-}
 </style>

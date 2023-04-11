@@ -1,6 +1,6 @@
 <template>
     <main>
-        <div class="project">
+        <div class="project" v-if="project">
             <carousel v-if="project.pictures" :items-to-show="1">
                 <slide v-for="image in project.pictures" :key="project.name">
                     <img class="header" :src="image" />
@@ -18,7 +18,7 @@
             <div class="members">
                 <h1>Membres</h1>
                 <span></span>
-                <div class="members-wrapper">
+                <div class="members-wrapper" v-if="roles">
                     <div v-for="role in roles" class="member">
                         <UserCard :user="role.user ?? { name: 'Vacant', picture: '/avatar-placeholder.png' }"
                             :subtitle="role.name"></UserCard>
@@ -29,7 +29,7 @@
         </div>
         <div class="content">
             <Timeline class="wrapper milestone-wrapper"></Timeline>
-            <PostInput v-if="canPost()" v-model="postContent" @submit="publishPost" :loading="loading"></PostInput>
+            <PostInput v-if="roles && canPost()" v-model="postContent" @submit="publishPost" :loading="loading"></PostInput>
             <Post v-for="post in posts" :post="post"></Post>
         </div>
 
@@ -80,7 +80,7 @@ fetcher(`http://localhost:5000/projects/${route.params.id}/roles`)
 
 function canPost() {
     console.log(roles.value)
-    return roles.value.some((role: any) => role.user.id === session.user.id)
+    return roles.value.some((role: any) => role.user?.id === session.user.id)
 }
 
 const postContent = ref('')

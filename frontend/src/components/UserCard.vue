@@ -1,6 +1,6 @@
 <template>
     <div @click="click" :class="user.id ? 'user clickable' : 'user'">
-        <img class="avatar" :src="props.user.picture" />
+        <img class="avatar" :src="props.user.picture ?? '/avatar-placeholder.png'" />
         <div class="user-details">
             <h2>{{ props.user.name }}</h2>
             <h3 v-if="props.subtitle">{{ props.subtitle }}</h3>

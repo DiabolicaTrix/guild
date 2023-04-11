@@ -1,18 +1,13 @@
 <template>
   <main>
     <div class="sidebar">
-      <div class="profile">
+      <div class="profile" v-if="user">
         <div class="profile-background"></div>
-        <div class="profile-picture-wrapper">
-          <img class="profile-picture" :src="user.picture" />
-        </div>
+        <EditableProfilePicture class="profile-picture-wrapper" :path="user.picture"></EditableProfilePicture>
         <div class="info">
           <div class="name">
             <h1>{{ user.name }}</h1>
             <h2>{{ user.role }}</h2>
-          </div>
-          <div class="actions">
-            <button class="primary" @click="contact">Contacter</button>
           </div>
         </div>
       </div>
@@ -24,9 +19,13 @@
           <div v-for="project in [...projects, ...projects]">
             <ProjectCard :value="project"></ProjectCard>
           </div>
+          <div class="create-project" @click="$router.push({ name: 'project-create' })">
+            <font-awesome-icon class="icon" :icon="['fas', 'plus']"></font-awesome-icon>
+            Ajouter un projet
+          </div>
         </div>
       </div>
-      <div class="content">
+      <div class="content" v-if="posts">
         <Post v-for="post in posts" :post="post"></Post>
       </div>
     </div>
@@ -36,40 +35,39 @@
 
 <script setup lang="ts">
 import ProjectCard from '@/components/ProjectCard.vue';
+import EditableProfilePicture from '@/components/EditableProfilePicture.vue';
 import Post from '@/components/Post.vue';
 
+import 'vue3-carousel/dist/carousel.css'
+import { Carousel, Slide } from 'vue3-carousel'
 
 import { ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 import { fetcher } from '@/utils/fetcher';
 import { useMessaging } from '@/stores/messaging';
 import { extractUserFromSession } from '@/utils/session';
 
-const route = useRoute()
-const router = useRouter()
 const messaging = useMessaging()
 
 const session = extractUserFromSession()
-if (session?.user.id == route.params.id) {
-  router.push('/me')
-}
+const userId = session?.user.id
 
 const user = ref()
-fetcher(`http://localhost:5000/users/${route.params.id}`)
+fetcher(`http://localhost:5000/users/${userId}`)
   .then(response => response.json())
   .then(data => {
     user.value = data;
   })
 
 const posts = ref()
-fetcher(`http://localhost:5000/users/${route.params.id}/posts`)
+fetcher(`http://localhost:5000/users/${userId}/posts`)
   .then(response => response.json())
   .then(data => {
     posts.value = data;
   })
 
 const projects = ref()
-fetcher(`http://localhost:5000/users/${route.params.id}/projects`)
+fetcher(`http://localhost:5000/users/${userId}/projects`)
   .then(response => response.json())
   .then(data => {
     projects.value = data;
@@ -140,13 +138,6 @@ main {
   margin-left: -93px;
 }
 
-.profile-picture {
-  height: 170px;
-  width: 170px;
-
-  border-radius: calc(170px / 2);
-}
-
 .info {
   position: absolute;
   bottom: 16px;
@@ -177,11 +168,28 @@ main {
 .projects-container {
   display: flex;
   gap: 32px;
-
-  overflow-x: scroll;
 }
 
-.projects-container::-webkit-scrollbar {
-  display: none;
+.carousel {
+  width: 100%;
+}
+
+.create-project {
+  height: 275px;
+  width: 224px;
+
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  background-color: #fffdfd;
+
+  cursor: pointer;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+
+  font-size: 24px;
 }
 </style>

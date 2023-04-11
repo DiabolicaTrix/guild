@@ -18,6 +18,25 @@ def get_user(id):
     }
 
 
+def get_user_by_email(email):
+    query = 'SELECT id, name, email, role, picture, created_at FROM users WHERE email = %s LIMIT 1'
+    cursor = db.get(query, [email])
+
+    if cursor.rowcount == 0:
+        return None
+
+    (id, name, email, role, picture, created_at) = cursor.fetchone()
+
+    return {
+        'id': id,
+        'name': name,
+        'email': email,
+        'role': role,
+        'picture': picture,
+        'created_at': created_at
+    }
+
+
 def get_posts(id):
     results = get_user_posts(id)
 

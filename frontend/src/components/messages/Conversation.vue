@@ -17,7 +17,7 @@ const props = defineProps(['contact'])
 
 const input = ref()
 
-const messages = ref()
+const messages = ref([])
 fetcher(`http://localhost:5000/messages/${props.contact.id}`)
     .then(response => response.json())
     .then(data => {

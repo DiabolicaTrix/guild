@@ -24,9 +24,13 @@
 <script setup lang="ts">
 import Contacts from '@/components/messages/Contacts.vue';
 import Conversation from '@/components/messages/Conversation.vue';
+import { useMessaging } from '@/stores/messaging';
 import { fetcher } from '@/utils/fetcher';
+import type { Store } from 'pinia';
 
 import { ref } from 'vue';
+
+const messaging = useMessaging()
 
 const activeContact = ref()
 function select(contact: any) {
@@ -34,6 +38,12 @@ function select(contact: any) {
 }
 
 const collapsed = ref(true)
+
+messaging.$onAction(({ name, store, args }) => {
+    if (name !== 'open') return
+    collapsed.value = false
+    activeContact.value = args[0]
+})
 </script>
 
 <style scoped>
