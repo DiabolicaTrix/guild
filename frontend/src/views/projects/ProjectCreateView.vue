@@ -22,7 +22,7 @@
                 </div>
             </div>
             <footer>
-                <button class="primary">Créer</button>
+                <button class="primary" @click="create">Créer</button>
             </footer>
         </div>
     </main>
@@ -33,6 +33,10 @@ import UserCard from '@/components/UserCard.vue';
 import AddMember from '@/components/AddMember.vue';
 import { extractUserFromSession } from '@/utils/session';
 import { ref } from 'vue';
+import { fetcher } from '@/utils/fetcher';
+import { useRouter } from 'vue-router';
+
+const router = useRouter()
 
 const name = ref()
 const description = ref()
@@ -51,6 +55,34 @@ function add(member: any) {
         members.value.push(member)
     }
     adding.value = false
+}
+
+async function create() {
+    const response = await fetcher('http://localhost:5000/projects', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            name: name.value,
+            description: description.value,
+            members: members.value.map(member => {
+                return {
+                    id: member.user.id,
+                    role: member.role
+                }
+            })
+        })
+    })
+    if (response.status === 201) {
+        const data = await response.json()
+        router.push({
+            name: 'project',
+            params: {
+                id: data.id
+            }
+        })
+    }
 }
 
 </script>

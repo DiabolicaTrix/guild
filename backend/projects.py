@@ -1,7 +1,9 @@
-from flask import Blueprint
+from flask import Blueprint, request
 from backend.database import connect
+from backend.exceptions.missingpermissions import MissingPermission
 from backend.repositories.posts import get_project_posts
 import backend.repositories.projects as repo
+import backend.controllers.projects as controller
 
 projects_blueprint = Blueprint('projects', __name__)
 
@@ -14,6 +16,30 @@ def get_projects():
 @projects_blueprint.route('/<int:id>', methods=['GET'])
 def get_project(id):
     return repo.get_project(id)
+
+
+@projects_blueprint.route('/', methods=['POST'])
+def create_project():
+    body = request.json
+
+    # Validate name, description and members
+    if not body or not body['name'] or not body['description'] or not body['members']:
+        return "Invalid request", 400
+
+    # Validate members is an array and contains at least one member
+    if not isinstance(body['members'], list) or len(body['members']) == 0:
+        return "Invalid request", 400
+
+    try:
+        id = controller.create_project(
+            request.environ['token'], body['name'], body['description'], body['members'])
+
+        if not id:
+            return "Error creating post", 500
+        return {'id': id}, 201
+
+    except MissingPermission:
+        return "Forbidden", 403
 
 
 @projects_blueprint.route('/<int:id>/posts', methods=['GET'])

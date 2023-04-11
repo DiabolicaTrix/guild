@@ -34,6 +34,7 @@
 </template>
 
 <script setup lang="ts">
+import Divider from '@/components/Divider.vue';
 import ProjectCard from '@/components/ProjectCard.vue';
 import EditableProfilePicture from '@/components/EditableProfilePicture.vue';
 import Post from '@/components/Post.vue';
@@ -131,11 +132,9 @@ main {
   align-items: center;
 
   position: absolute;
-  top: 50%;
-  margin-top: -93px;
-
   left: 50%;
-  margin-left: -93px;
+  top: calc(200px - 93px);
+  transform: translate(-50%, 0);
 }
 
 .info {
@@ -168,6 +167,11 @@ main {
 .projects-container {
   display: flex;
   gap: 32px;
+  overflow-x: scroll;
+}
+
+.projects-container::-webkit-scrollbar {
+  display: none;
 }
 
 .carousel {

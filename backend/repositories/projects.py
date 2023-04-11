@@ -47,6 +47,27 @@ def get_project(id):
     return result
 
 
+def create_project(name, description):
+    query = '''INSERT INTO projects (name, description) VALUES (%s, %s)'''
+    cursor = db.post(query, [name, description])
+
+    if cursor.rowcount == 0:
+        return None
+
+    return cursor.lastrowid
+
+
+def assign_members_to_projects(project_id, members):
+    for member in members:
+        query = '''INSERT INTO projects_roles (project_id, user_id, name) VALUES (%s, %s, %s)'''
+        cursor = db.post(query, [project_id, member['id'], member['role']])
+
+        if cursor.rowcount == 0:
+            return False
+
+    return True
+
+
 def is_user_member(user_id, project_id):
     query = 'SELECT * FROM projects_roles WHERE user_id = %s AND project_id = %s'
     cursor = db.get(query, [user_id, project_id])
