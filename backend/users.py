@@ -24,6 +24,15 @@ def get_users():
     return repo.get_users(id)
 
 
+@users_blueprint.route('/<int:id>/picture', methods=['POST'])
+def upload_user_picture(id):
+
+    if 'file' not in request.files:
+        return "No file part", 400
+
+    return "OK I Guess", 201
+
+
 @users_blueprint.route('/<int:id>/posts', methods=['GET'])
 def get_posts(id):
     return repo.get_posts(id)

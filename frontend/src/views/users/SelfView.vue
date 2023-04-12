@@ -1,9 +1,11 @@
 <template>
   <main>
+    <UploadPictureModal v-if="showUpload" :user-id="userId"></UploadPictureModal>
     <div class="sidebar">
       <div class="profile" v-if="user">
         <div class="profile-background"></div>
-        <EditableProfilePicture class="profile-picture-wrapper" :path="user.picture"></EditableProfilePicture>
+        <EditableProfilePicture class="profile-picture-wrapper" :path="user.picture" @click="showUpload = true">
+        </EditableProfilePicture>
         <div class="info">
           <div class="name">
             <h1>{{ user.name }}</h1>
@@ -38,6 +40,7 @@ import Divider from '@/components/Divider.vue';
 import ProjectCard from '@/components/ProjectCard.vue';
 import EditableProfilePicture from '@/components/EditableProfilePicture.vue';
 import EditableField from '@/components/EditableField.vue';
+import UploadPictureModal from '@/components/UploadPictureModal.vue';
 import Post from '@/components/Post.vue';
 
 import 'vue3-carousel/dist/carousel.css'
@@ -48,8 +51,10 @@ import { useRoute } from 'vue-router'
 import { fetcher } from '@/utils/fetcher';
 import { useMessaging } from '@/stores/messaging';
 import { extractUserFromSession } from '@/utils/session';
+import type UploadPictureModalVue from '@/components/UploadPictureModal.vue';
 
 const messaging = useMessaging()
+const showUpload = ref(false)
 
 const session = extractUserFromSession()
 const userId = session?.user.id
