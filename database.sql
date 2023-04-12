@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS projects (
   name VARCHAR(255),
   description TEXT,
   status VARCHAR(255),
+  progress INT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -81,6 +82,15 @@ INSERT INTO projects_roles (project_id, user_id, name) VALUES (2, 2, 'Designer')
 INSERT INTO projects_roles (project_id, user_id, name) VALUES (3, 1, 'Développeur');
 INSERT INTO projects_roles (project_id, user_id, name) VALUES (3, 2, 'Designer');
 INSERT INTO projects_roles (project_id, user_id, name) VALUES (3, NULL, 'Artiste 3D');
+
+CREATE TRIGGER validate_percentage
+BEFORE INSERT ON projects
+FOR EACH ROW
+BEGIN
+  IF NEW.progress < 0 OR NEW.progess > 100 THEN
+    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Progress must be between 0 and 100';
+  END IF;
+END;
 
 
 

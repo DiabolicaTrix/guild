@@ -7,7 +7,7 @@
         <div class="info">
           <div class="name">
             <h1>{{ user.name }}</h1>
-            <h2>{{ user.role }}</h2>
+            <EditableField :value="user.role" @submit="updateRole"></EditableField>
           </div>
         </div>
       </div>
@@ -37,6 +37,7 @@
 import Divider from '@/components/Divider.vue';
 import ProjectCard from '@/components/ProjectCard.vue';
 import EditableProfilePicture from '@/components/EditableProfilePicture.vue';
+import EditableField from '@/components/EditableField.vue';
 import Post from '@/components/Post.vue';
 
 import 'vue3-carousel/dist/carousel.css'
@@ -74,8 +75,8 @@ fetcher(`http://localhost:5000/users/${userId}/projects`)
     projects.value = data;
   })
 
-function contact() {
-  messaging.open(user.value)
+function updateRole(role: string) {
+  user.role.value = role
 }
 </script>
 

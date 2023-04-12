@@ -3,7 +3,7 @@
         <div class="post">
             <div class="post-header">
                 <UserCard :user="props.post.author"></UserCard>
-                <h6>12 septembre 2021</h6>
+                <h6>{{ formatDate(props.post.created_at) }}</h6>
             </div>
         </div>
         <div class="post-content">
@@ -14,8 +14,13 @@
 
 <script setup lang="ts">
 import UserCard from './UserCard.vue';
+import { DateTime } from 'luxon'
 
 const props = defineProps(['post'])
+
+function formatDate(date: string) {
+    return DateTime.fromHTTP(date).toLocaleString(DateTime.DATETIME_MED)
+}
 </script>
 
 <style scoped>
