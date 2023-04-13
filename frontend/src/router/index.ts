@@ -31,6 +31,11 @@ const router = createRouter({
           component: () => import('../views/users/SelfView.vue')
         },
         {
+          path: '/applications/:id',
+          name: 'application',
+          component: () => import('../views/projects/ApplicationView.vue')
+        },
+        {
           path: '/projects/create',
           name: 'project-create',
           component: () => import('../views/projects/ProjectCreateView.vue')
@@ -39,6 +44,11 @@ const router = createRouter({
           path: '/projects/:id',
           name: 'project',
           component: () => import('../views/projects/ProjectView.vue')
+        },
+        {
+          path: '/projects/:projectId/apply/:roleId',
+          name: 'project-apply',
+          component: () => import('../views/projects/ApplyView.vue')
         },
         {
           path: '/users/:id',

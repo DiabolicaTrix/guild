@@ -4,6 +4,8 @@ from backend.exceptions.missingpermissions import MissingPermission
 from backend.repositories.posts import get_project_posts
 import backend.repositories.projects as repo
 import backend.controllers.projects as controller
+import backend.controllers.applications as applications_controller
+
 
 projects_blueprint = Blueprint('projects', __name__)
 
@@ -57,7 +59,7 @@ def get_roles(id):
     conn = connect()
     cursor = conn.cursor(buffered=True)
 
-    query = '''SELECT PR.name, users.name as user_name, picture as user_picture, users.id as user_id FROM projects_roles as PR LEFT JOIN users ON users.id = PR.user_id WHERE project_id = %s'''
+    query = '''SELECT PR.id, PR.name, users.name as user_name, picture as user_picture, users.id as user_id FROM projects_roles as PR LEFT JOIN users ON users.id = PR.user_id WHERE project_id = %s'''
     cursor.execute(query, [id])
     cursor.close()
 
@@ -65,8 +67,9 @@ def get_roles(id):
         return "Not found", 404
 
     results = []
-    for (name, user_name, user_picture, user_id) in cursor:
+    for (id, name, user_name, user_picture, user_id) in cursor:
         result = {
+            'id': id,
             'name': name,
         }
 

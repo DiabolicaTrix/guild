@@ -47,9 +47,9 @@ def get_posts(id):
 
 
 def get_user_projects(id):
-    query = '''SELECT id, projects.name, description, status, created_at
+    query = '''SELECT projects.id, projects.name, description, status, created_at
                 FROM projects
-                INNER JOIN projects_roles PR ON PR.project_id = id 
+                INNER JOIN projects_roles PR ON PR.project_id = projects.id 
                 WHERE user_id = %s'''
     cursor = db.get(query, [id])
 

@@ -22,13 +22,13 @@
                     <div v-for="role in roles" class="member">
                         <UserCard :user="role.user ?? { name: 'Vacant', picture: '/avatar-placeholder.png' }"
                             :subtitle="role.name"></UserCard>
-                        <button v-if="!role.user" class="apply primary">Appliquer</button>
+                        <button v-if="!role.user" class="apply primary" @click="apply(role)">Appliquer</button>
                     </div>
                 </div>
             </div>
         </div>
         <div class="content">
-            <Timeline class="wrapper milestone-wrapper"></Timeline>
+            <Timeline v-if="project" class="wrapper milestone-wrapper" :progress="project.progress"></Timeline>
             <PostInput v-if="roles && canPost()" v-model="postContent" @submit="publishPost" :loading="loading"></PostInput>
             <Post v-for="post in posts" :post="post"></Post>
         </div>
@@ -42,14 +42,16 @@ import Post from '@/components/Post.vue';
 import PostInput from '@/components/PostInput.vue';
 import Timeline from '@/components/Timeline.vue';
 import UserCard from '@/components/UserCard.vue';
+import 'vue3-carousel/dist/carousel.css'
 import { Carousel, Slide, Navigation } from 'vue3-carousel'
 
 import { ref } from 'vue';
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { fetcher } from '@/utils/fetcher';
 import { useSessionStore } from '@/stores/session';
 
 const route = useRoute();
+const router = useRouter();
 const { session } = useSessionStore();
 
 const project = ref()
@@ -75,6 +77,7 @@ const roles = ref()
 fetcher(`http://localhost:5000/projects/${route.params.id}/roles`)
     .then(response => response.json())
     .then(data => {
+        console.log(data)
         roles.value = data;
     })
 
@@ -86,7 +89,6 @@ function canPost() {
 const postContent = ref('')
 const loading = ref(false)
 async function publishPost() {
-    console.log(postContent.value)
     loading.value = true;
     const response = await fetcher(`http://localhost:5000/posts`, {
         method: 'POST',
@@ -107,6 +109,9 @@ async function publishPost() {
     loading.value = false
 }
 
+function apply(role: any) {
+    router.push({ name: "project-apply", params: { projectId: route.params.id, roleId: role.id } })
+}
 </script>
 
 <style scoped>

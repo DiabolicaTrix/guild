@@ -15,10 +15,10 @@
       </div>
     </div>
     <div class="content">
-      <div class="portfolio">
+      <div class="portfolio" v-if="projects">
         <h1>Projects</h1>
         <div class="projects-container">
-          <div v-for="project in [...projects, ...projects]">
+          <div v-for="project in projects">
             <ProjectCard :value="project"></ProjectCard>
           </div>
           <div class="create-project" @click="$router.push({ name: 'project-create' })">

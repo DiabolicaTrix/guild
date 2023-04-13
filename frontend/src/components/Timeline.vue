@@ -2,10 +2,25 @@
     <div class="timeline-wrapper">
         <div class="timeline">
             <img src="/progressbar-background.svg" />
-            <img class="front" src="/progressbar-front.svg" />
+            <img :style="getProgress" class="front" src="/progressbar-front.svg" />
         </div>
     </div>
 </template>
+
+<script setup lang="ts">
+import { computed } from 'vue';
+
+const props = defineProps<{
+    progress: number;
+}>();
+
+const getProgress = computed(() => {
+    return {
+        width: `${props.progress / 100 * 673}px`
+    }
+})
+
+</script>
 
 <style scoped>
 .timeline-wrapper {
@@ -29,7 +44,6 @@ img {
 
 img.front {
     height: 52px;
-    width: calc(673px * 0.5);
     margin-left: 5px;
     margin-top: 5px;
 

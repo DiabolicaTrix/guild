@@ -2,16 +2,17 @@ import backend.database as db
 
 
 def get_projects():
-    query = 'SELECT id, name, description, status, created_at FROM projects'
+    query = 'SELECT id, name, description, status, progress, created_at FROM projects'
     cursor = db.get(query)
 
     results = []
-    for (id, name, description, status, created_at) in cursor:
+    for (id, name, description, status, progress, created_at) in cursor:
         results.append({
             'id': id,
             'name': name,
             'description': description,
             'status': status,
+            'progress': progress,
             'created_at': created_at
         })
 
@@ -19,16 +20,17 @@ def get_projects():
 
 
 def get_project(id):
-    query = 'SELECT id, name, description, status, created_at FROM projects WHERE id = %s'
+    query = 'SELECT id, name, description, status, progress, created_at FROM projects WHERE id = %s'
     cursor = db.get(query, [id])
 
-    (id, name, description, status, created_at) = cursor.fetchone()
+    (id, name, description, status, progress, created_at) = cursor.fetchone()
 
     result = {
         'id': id,
         'name': name,
         'description': description,
         'status': status,
+        'progress': progress,
         'created_at': created_at
     }
 

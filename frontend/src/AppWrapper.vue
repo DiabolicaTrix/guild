@@ -1,5 +1,6 @@
 <template>
     <header v-if="session">
+        <Notifications></Notifications>
         <div class="user-container" @click="toggle">
             <UserCard :user="session.user" navigate="no"></UserCard>
             <font-awesome-icon :icon="['fas', 'caret-down']" />
@@ -32,6 +33,7 @@ import { useCookies } from 'vue3-cookies';
 import { ref } from 'vue';
 import { useSessionStore } from './stores/session';
 import MessageSidebar from './components/messages/MessageSidebar.vue';
+import Notifications from './components/Notifications.vue';
 
 const router = useRouter()
 const { cookies } = useCookies()
@@ -63,7 +65,7 @@ header {
 
     display: flex;
     align-items: center;
-    justify-content: end;
+    justify-content: space-between;
 
     padding: 0px 16px;
 }
