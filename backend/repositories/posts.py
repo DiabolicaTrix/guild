@@ -52,7 +52,9 @@ def get_user_posts(id):
 def get_posts():
     query = '''SELECT posts.id, content, posts.created_at, name as author_name, picture as author_picture, users.id as author_id
                FROM posts
-               INNER JOIN users ON posts.author_id = users.id'''
+               INNER JOIN users ON posts.author_id = users.id
+               ORDER BY posts.created_at DESC
+               LIMIT 25'''
     cursor = db.get(query)
 
     results = []

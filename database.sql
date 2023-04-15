@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS notifications;
 DROP TABLE IF EXISTS applications;
 DROP TABLE IF EXISTS projects_roles;
 DROP TABLE IF EXISTS projects_pictures;
@@ -7,6 +8,9 @@ DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS projects;
 
 DROP TRIGGER IF EXISTS validate_percentage;
+DROP TRIGGER IF EXISTS send_notification_on_application;
+DROP PROCEDURE IF EXISTS accept_application;
+DROP PROCEDURE IF EXISTS reject_application;
 
 CREATE TABLE IF NOT EXISTS users (
   id INT AUTO_INCREMENT PRIMARY KEY,
@@ -21,6 +25,7 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS projects (
   id INT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(255),
+  theme VARCHAR(255),
   description TEXT,
   status VARCHAR(255),
   progress INT,
@@ -74,28 +79,20 @@ CREATE TABLE IF NOT EXISTS applications (
   FOREIGN KEY (role_id) REFERENCES projects_roles(id)
 );
 
+CREATE TABLE IF NOT EXISTS notifications (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT,
+  message TEXT,
+  application_id INT,
+  sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id),
+  FOREIGN KEY (application_id) REFERENCES applications(id)
+);
+
 
 INSERT INTO users (name, email, role, password, picture) VALUES ('John Doe', 'johndoe@hotmail.com', 'Développer', '$2b$12$pgfA4t4v8Lk7Ok9UvAlVCuhz2M1oDabz9ImA6sVlhGarpzQZxDC9a', '/avatar2.png');
 INSERT INTO users (name, email, role, password, picture) VALUES ('Jane Doe', 'janedoe@hotmail.com', 'Designer', '$2b$12$pgfA4t4v8Lk7Ok9UvAlVCuhz2M1oDabz9ImA6sVlhGarpzQZxDC9a', '/avatar.png');
 
-INSERT INTO projects (name, description, status, progress) VALUES ('Project 1', 'Lorem ipsum dolor sit amet.', 'IN_PROGRESS', 0);
-INSERT INTO projects (name, description, status, progress) VALUES ('Project 2', 'Lorem ipsum dolor sit amet.', 'DONE', 100);
-INSERT INTO projects (name, description, status, progress) VALUES ('Project 3', 'Lorem ipsum dolor sit amet.', 'IN_PROGRESS', 25);
-
-INSERT INTO posts (author_id, project_id, content) VALUES (1, 1, 'Lorem ipsum dolor sit amet.');
-INSERT INTO posts (author_id, project_id, content) VALUES (1, 3, 'Lorem ipsum dolor sit amet.');
-INSERT INTO posts (author_id, project_id, content) VALUES (2, 2, 'Lorem ipsum dolor sit amet.');
-INSERT INTO posts (author_id, project_id, content) VALUES (2, 3, 'Lorem ipsum dolor sit amet.');
-
-INSERT INTO projects_pictures (project_id, path) VALUES (1, '/project-background.png');
-INSERT INTO projects_pictures (project_id, path) VALUES (1, '/project-background.png');
-INSERT INTO projects_pictures (project_id, path) VALUES (1, '/project-background.png');
-
-INSERT INTO projects_roles (project_id, user_id, name) VALUES (1, 1, 'Développeur');
-INSERT INTO projects_roles (project_id, user_id, name) VALUES (2, 2, 'Designer');
-INSERT INTO projects_roles (project_id, user_id, name) VALUES (3, 1, 'Développeur');
-INSERT INTO projects_roles (project_id, user_id, name) VALUES (3, 2, 'Designer');
-INSERT INTO projects_roles (project_id, user_id, name) VALUES (3, NULL, 'Artiste 3D');
 
 DELIMITER //
 CREATE TRIGGER validate_percentage
@@ -108,5 +105,37 @@ BEGIN
 END //
 DELIMITER ;
 
+DELIMITER //
+CREATE TRIGGER send_notification_on_application
+AFTER INSERT ON applications
+FOR EACH ROW
+BEGIN
+  DECLARE proid INT;
+  SET proid = (SELECT project_id FROM projects_roles WHERE id = NEW.role_id LIMIT 1);
 
+  INSERT INTO notifications (user_id, message, application_id)
+  SELECT pr.user_id, CONCAT('A new application has been submitted for ', p.name), NEW.id
+  FROM projects_roles pr
+  INNER JOIN projects p ON pr.project_id = p.id
+  WHERE pr.project_id = proid AND pr.user_id IS NOT NULL;
+END //
+DELIMITER ;
 
+DELIMITER //
+CREATE PROCEDURE accept_application(IN app_id INT)
+BEGIN
+  UPDATE projects_roles pr SET user_id = (SELECT user_id FROM applications WHERE id = app_id LIMIT 1)
+  WHERE pr.id = (SELECT role_id FROM applications WHERE id = app_id LIMIT 1);
+  
+  DELETE FROM notifications WHERE application_id = app_id;
+  DELETE FROM applications WHERE id = app_id;
+END //
+DELIMITER ;
+
+DELIMITER //
+CREATE PROCEDURE reject_application(IN app_id INT)
+BEGIN
+  DELETE FROM notifications WHERE application_id = app_id;
+  DELETE FROM applications WHERE id = app_id;
+END //
+DELIMITER ;

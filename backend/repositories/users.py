@@ -75,3 +75,24 @@ def get_user_projects(id):
     cursor.close()
 
     return results
+
+
+def get_notifications(id):
+    query = '''SELECT message, application_id, sent_at
+                FROM notifications
+                WHERE user_id = %s'''
+    cursor = db.get(query, [id])
+
+    results = []
+    for (message, application_id, sent_at) in cursor:
+        result = {
+            'message': message,
+            'application_id': application_id,
+            'sent_at': sent_at,
+        }
+        results.append(result)
+
+    if len(results) == 0:
+        return "No notifications found for user", 404
+
+    return results

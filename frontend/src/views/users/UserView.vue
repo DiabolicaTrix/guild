@@ -97,6 +97,7 @@ main {
 }
 
 .content {
+  width: 800px;
   display: flex;
   flex-direction: column;
 
@@ -165,7 +166,7 @@ main {
   border-radius: 8px;
   border: 1px solid rgba(0, 0, 0, 0.2);
 
-  width: 687px;
+  width: 800px;
 
   padding: 28px 32px;
 

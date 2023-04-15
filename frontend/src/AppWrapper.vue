@@ -1,6 +1,15 @@
 <template>
     <header v-if="session">
         <Notifications></Notifications>
+        <div class="navigation">
+            <RouterLink to="/">
+                <font-awesome-icon class="icon navigation-item" :icon="['fas', 'house']" />
+            </RouterLink>
+            <RouterLink to="/discover">
+                <font-awesome-icon class="icon navigation-item" :icon="['fas', 'compass']" />
+            </RouterLink>
+
+        </div>
         <div class="user-container" @click="toggle">
             <UserCard :user="session.user" navigate="no"></UserCard>
             <font-awesome-icon :icon="['fas', 'caret-down']" />
@@ -120,6 +129,21 @@ header {
     bottom: 0;
     top: 50%;
     width: 400px;
+}
+
+.navigation {
+    font-size: 28px;
+    display: flex;
+    gap: 16px;
+    align-items: center;
+}
+
+.navigation-item {
+    cursor: pointer;
+}
+
+.navigation-item:hover {
+    color: #e6e6e6;
 }
 </style>
   

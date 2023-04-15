@@ -4,7 +4,9 @@
         <div v-if="notifications.length > 0" class="bell-pin"></div>
     </div>
     <div v-if="show" class="dropdown">
-        <div v-for="notification in notifications" class="dropdown-item clickable">
+        <div v-for="notification in notifications"
+            :class="['dropdown-item', notification.application_id ? 'clickable' : '']"
+            @click="viewApplication(notification.application_id)">
             <span>{{ notification.message }}</span>
         </div>
     </div>
@@ -14,28 +16,26 @@
 import { fetcher } from '@/utils/fetcher';
 import { extractUserFromSession } from '@/utils/session';
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter()
 
 const session = extractUserFromSession()
 const userId = session?.user.id
 
 const show = ref(false)
 
-const notifications = ref<any[]>([
-    {
-        from: {
-            id: 1,
-            name: 'John Doe',
-            picture: 'https://picsum.photos/200/300'
-        },
-        message: 'John Doe a appliqué pour votre projet',
-    }
-])
+const notifications = ref<any[]>([])
 fetcher(`http://localhost:5000/users/${userId}/notifications`)
     .then(response => response.json())
     .then(data => {
+        console.log(data)
         notifications.value = data;
     })
 
+function viewApplication(applicationId: number) {
+    router.push({ name: 'application', params: { id: applicationId } })
+}
 </script>
 
 <style scoped>

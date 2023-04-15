@@ -2,7 +2,7 @@
     <main>
         <div class="project wrapper">
             <header>
-                <h1>Application pour votre projet</h1>
+                <h1>Application pour {{ application.project.name }}</h1>
             </header>
             <div class="inputs">
                 <UserCard :user="application.user" :subtitle="application.role.name"></UserCard>
@@ -10,10 +10,11 @@
                 <p>{{ application.motivation }}</p>
             </div>
             <footer>
-                <button v-if="!loading" class="primary" @click="apply">Accepter</button>
-                <button v-else class="primary">
+                <button v-if="!loading" class="accept" @click="apply">Accepter</button>
+                <button v-else class="accept">
                     <sync-loader color="#fffdfd" size="8px"></sync-loader>
                 </button>
+                <button class="reject" @click="apply">Refuser</button>
             </footer>
         </div>
     </main>
@@ -62,5 +63,18 @@ main {
 
 .inputs textarea input {
     font-size: 18px !important;
+}
+
+footer {
+    display: flex;
+    gap: 16px;
+}
+
+.reject {
+    background-color: #FF0000;
+}
+
+.accept {
+    background-color: #148314;
 }
 </style>

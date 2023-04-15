@@ -41,3 +41,8 @@ def get_posts(id):
 @users_blueprint.route('/<int:id>/projects', methods=['GET'])
 def get_user_projects(id):
     return repo.get_user_projects(id)
+
+
+@users_blueprint.route('/<int:id>/notifications', methods=['GET'])
+def get_notifications(id):
+    return repo.get_notifications(id)
