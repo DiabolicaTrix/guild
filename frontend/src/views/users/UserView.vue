@@ -21,7 +21,7 @@
       <div class="portfolio">
         <h1>Projects</h1>
         <div class="projects-container">
-          <div v-for="project in [...projects, ...projects]">
+          <div v-for="project in projects">
             <ProjectCard :value="project"></ProjectCard>
           </div>
         </div>

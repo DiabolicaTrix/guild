@@ -7,7 +7,7 @@
     <div v-if="!loading && contacts && contacts.length > 0" v-for="contact in contacts" class="contact">
         <UserCard :user="contact" navigate="no" @click="$emit('select', contact)"></UserCard>
     </div>
-    <div v-else class="no-contact">
+    <div v-if="!loading && (!contacts || contacts.length == 0)" class="no-contact">
         <p>Aucun contact</p>
     </div>
 </template>

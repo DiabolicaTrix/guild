@@ -151,7 +151,6 @@ span {
 
 .info {
     padding: 16px;
-    text-align: justify;
 }
 
 .content {

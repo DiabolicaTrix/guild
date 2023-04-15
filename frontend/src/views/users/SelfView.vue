@@ -105,6 +105,7 @@ main {
   display: flex;
   flex-direction: column;
 
+  width: 800px;
   gap: 36px;
 }
 
@@ -160,8 +161,6 @@ main {
   background-color: #FFFDFD;
   border-radius: 8px;
   border: 1px solid rgba(0, 0, 0, 0.2);
-
-  width: 687px;
 
   padding: 28px 32px;
 

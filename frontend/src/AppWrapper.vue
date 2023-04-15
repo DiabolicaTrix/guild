@@ -1,7 +1,10 @@
 <template>
     <header v-if="session">
-        <Notifications></Notifications>
-        <div class="navigation">
+        <div class="header-item flex-left">
+            <Notifications></Notifications>
+
+        </div>
+        <div class="header-item flex-center navigation center">
             <RouterLink to="/">
                 <font-awesome-icon class="icon navigation-item" :icon="['fas', 'house']" />
             </RouterLink>
@@ -10,7 +13,7 @@
             </RouterLink>
 
         </div>
-        <div class="user-container" @click="toggle">
+        <div class="header-item flex-right user-container" @click="toggle">
             <UserCard :user="session.user" navigate="no"></UserCard>
             <font-awesome-icon :icon="['fas', 'caret-down']" />
         </div>
@@ -79,6 +82,25 @@ header {
     padding: 0px 16px;
 }
 
+.header-item {
+    flex: 1;
+}
+
+.flex-center {
+    display: flex;
+    justify-content: center;
+}
+
+.flex-left {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.flex-right {
+    display: flex;
+    justify-content: flex-end !important;
+}
+
 .user-container {
     display: flex;
     align-items: center;
@@ -136,6 +158,8 @@ header {
     display: flex;
     gap: 16px;
     align-items: center;
+
+    justify-self: center;
 }
 
 .navigation-item {
