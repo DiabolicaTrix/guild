@@ -1,11 +1,13 @@
 <template>
     <main>
         <div class="wrapper content">
-            <div v-if="error" class="wrapper error">{{ error }}</div>
+            <div v-if="errors.request" class="wrapper error">{{ errors.request }}</div>
             <label for="email">Email</label>
             <input type="email" name="email" v-model="email">
+            <span v-if="errors.email" class="inline-error">{{ errors.email }}</span>
             <label for="password">Mot de passe</label>
             <input type="password" name="password" v-model="password">
+            <span v-if="errors.password" class="inline-error">{{ errors.password }}</span>
             <div class="actions">
                 <button class="primary" @click="login">Se connecter</button>
                 <button class="secondary" @click="register">S'inscrire</button>
@@ -22,6 +24,7 @@ import { useCookies } from "vue3-cookies";
 import 'vue3-carousel/dist/carousel.css'
 import { useSessionStore } from '@/stores/session.js';
 import { extractUserFromSession } from '@/utils/session';
+import { validateEmail, validatePassword } from '@/validations/loginvalidation';
 
 const router = useRouter()
 const { cookies } = useCookies()
@@ -30,9 +33,23 @@ const { setSession } = useSessionStore()
 const email = ref()
 const password = ref()
 
-const error = ref()
+type LoginErrors = {
+    request?: string
+    email?: string
+    password?: string
+}
+const errors = ref<LoginErrors>({})
 
 async function login() {
+    const emailValidation = validateEmail(email.value)
+    errors.value.email = emailValidation
+    const passwordValidation = validatePassword(password.value)
+    errors.value.password = passwordValidation
+
+    if (emailValidation || passwordValidation) {
+        return
+    }
+
     const response = await fetch('http://localhost:5000/login', {
         method: 'POST',
         headers: {
@@ -45,12 +62,12 @@ async function login() {
     })
 
     if (response.status >= 400 && response.status < 500) {
-        error.value = 'Email ou mot de passe incorrect'
+        errors.value.request = 'Email ou mot de passe incorrect'
         return
     }
 
     if (response.status >= 500) {
-        error.value = 'Erreur serveur'
+        errors.value.request = 'Erreur serveur'
         return
     }
 
@@ -98,12 +115,6 @@ input {
 
 label {
     font-weight: bold;
-}
-
-.error {
-    color: #fffdfd;
-    background-color: #ff0033;
-    padding: 8px;
 }
 </style>
   
