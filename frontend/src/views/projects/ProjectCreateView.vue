@@ -6,10 +6,14 @@
                 <h1>Créer un projet</h1>
             </header>
             <div class="inputs">
+                <div v-if="errors.request" class="wrapper error">{{ errors.request }}</div>
+
                 <label for="name">Nom du projet</label>
                 <input type="text" name="name" v-model="name" />
+                <span v-if="errors.name" class="inline-error">{{ errors.name }}</span>
                 <label for="description">Description du projet</label>
                 <textarea name="description" v-model="description"></textarea>
+                <span v-if="errors.description" class="inline-error">{{ errors.description }}</span>
                 <div class="members">
                     <label for="members">Membres</label>
                     <UserCard class="member" v-for="member in members" navigate="no" :user="member.user"
@@ -35,6 +39,8 @@ import { extractUserFromSession } from '@/utils/session';
 import { ref } from 'vue';
 import { fetcher } from '@/utils/fetcher';
 import { useRouter } from 'vue-router';
+import type { ProjectErrors } from '@/validations/projectvalidation';
+import { validateName, validateDescription } from '@/validations/projectvalidation';
 
 const router = useRouter()
 
@@ -57,7 +63,20 @@ function add(member: any) {
     adding.value = false
 }
 
+const errors = ref<ProjectErrors>({
+    request: 'test'
+})
+
 async function create() {
+    const nameValidation = validateName(name.value)
+    errors.value.name = nameValidation
+    const descriptionValidation = validateDescription(description.value)
+    errors.value.description = descriptionValidation
+
+    if (nameValidation || descriptionValidation) {
+        return
+    }
+
     const response = await fetcher('http://localhost:5000/projects', {
         method: 'POST',
         headers: {
@@ -74,6 +93,7 @@ async function create() {
             })
         })
     })
+
     if (response.status === 201) {
         const data = await response.json()
         router.push({
@@ -82,6 +102,14 @@ async function create() {
                 id: data.id
             }
         })
+    }
+
+    if (response.status >= 400 && response.status < 500) {
+        errors.value.request = await response.text()
+    }
+
+    if (response.status >= 500) {
+        errors.value.request = 'Une erreur est survenue'
     }
 }
 

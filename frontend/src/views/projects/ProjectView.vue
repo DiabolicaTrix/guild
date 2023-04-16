@@ -1,5 +1,5 @@
 <template>
-    <main>
+    <main v-if="project">
         <div class="project" v-if="project">
             <carousel v-if="project.pictures" :items-to-show="1">
                 <slide v-for="image in project.pictures" :key="project.name">
@@ -32,7 +32,9 @@
             <PostInput v-if="roles && canPost()" v-model="postContent" @submit="publishPost" :loading="loading"></PostInput>
             <Post v-for="post in posts" :post="post"></Post>
         </div>
-
+    </main>
+    <main v-else>
+        <div class="error">Ce projet n'existe pas</div>
     </main>
 </template>
 

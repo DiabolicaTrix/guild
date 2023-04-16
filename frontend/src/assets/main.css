@@ -106,3 +106,14 @@ input {
 .clickable {
     cursor: pointer;
 }
+
+.inline-error {
+    color: #ff0033;
+}
+
+.error {
+    color: #fffdfd;
+    background-color: #ff0033;
+    border-radius: 8px;
+    padding: 8px;
+}

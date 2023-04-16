@@ -9,6 +9,8 @@
                 <h2>Rôle: {{ role.name }}</h2>
                 <label for="motivation">Motivation</label>
                 <textarea name="motivation" v-model="motivation"></textarea>
+                <span v-if="errors.motivation" class="inline-error">{{ errors.motivation }}</span>
+
             </div>
             <footer>
                 <button v-if="!loading" class="primary" @click="apply">Appliquer</button>
@@ -22,11 +24,14 @@
 
 <script setup lang="ts">
 import { fetcher } from '@/utils/fetcher';
+import { validateMotivation, type ApplyErrors } from '@/validations/applyvalidation';
 import { ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 const route = useRoute()
 const router = useRouter()
+
+const errors = ref<ApplyErrors>({})
 
 const project = ref()
 fetcher(`http://localhost:5000/projects/${route.params.projectId}`)
@@ -47,6 +52,13 @@ const motivation = ref()
 
 const loading = ref(false)
 async function apply() {
+    const motivationValidation = validateMotivation(motivation.value)
+    errors.value.motivation = motivationValidation
+
+    if (motivationValidation) {
+        return
+    }
+
     loading.value = true
     const response = await fetcher(`http://localhost:5000/roles/${route.params.roleId}/apply`, {
         method: 'POST',
@@ -57,6 +69,19 @@ async function apply() {
             motivation: motivation.value
         })
     })
+
+    if (response.status === 201) {
+        router.push({ name: "project", params: { id: route.params.projectId } })
+    }
+
+    if (response.status >= 400 && response.status < 500) {
+        errors.value.request = await response.text()
+    }
+
+    if (response.status >= 500) {
+        errors.value.request = 'Une erreur est survenue'
+    }
+
     loading.value = false
 }
 

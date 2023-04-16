@@ -1,5 +1,5 @@
 <template>
-  <main>
+  <main v-if="user">
     <div class="sidebar">
       <div class="profile">
         <div class="profile-background"></div>
@@ -31,6 +31,9 @@
       </div>
     </div>
 
+  </main>
+  <main v-else>
+    <div class="error">Cet utilisateur n'existe pas</div>
   </main>
 </template>
 

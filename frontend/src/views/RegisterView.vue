@@ -1,14 +1,17 @@
 <template>
     <main>
-        <div v-if="error" class="wrapper error">{{ error }}</div>
+        <div v-if="errors.request" class="wrapper error">{{ errors.request }}</div>
 
         <div class="wrapper content">
             <label for="name">Nom</label>
             <input type="name" name="name" v-model="name">
+            <span v-if="errors.name" class="inline-error">{{ errors.name }}</span>
             <label for="email">Email</label>
             <input type="email" name="email" v-model="email">
+            <span v-if="errors.email" class="inline-error">{{ errors.email }}</span>
             <label for="password">Mot de passe</label>
             <input type="password" name="password" v-model="password">
+            <span v-if="errors.password" class="inline-error">{{ errors.password }}</span>
             <label for="password-confirmation">Confirmation mot de passe</label>
             <input type="password" name="password-confirmation" v-model="password_confirmation">
             <div class="actions">
@@ -20,6 +23,7 @@
 </template>
   
 <script setup lang="ts">
+import { validateName, validateEmail, validatePassword } from '@/validations/registervalidation';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import 'vue3-carousel/dist/carousel.css'
@@ -31,9 +35,27 @@ const email = ref()
 const password = ref()
 const password_confirmation = ref()
 
-const error = ref()
+type RegisterErrors = {
+    request?: string
+    name?: string
+    email?: string
+    password?: string
+}
+const errors = ref<RegisterErrors>({})
 
 async function register() {
+    const nameValidation = validateName(name.value)
+    errors.value.name = nameValidation
+    const emailValidation = validateEmail(email.value)
+    errors.value.email = emailValidation
+    const passwordValidation = validatePassword(password.value, password_confirmation.value)
+    errors.value.password = passwordValidation
+
+    // If any of the validations failed, return
+    if (nameValidation || emailValidation || passwordValidation) {
+        return
+    }
+
     const response = await fetch('http://localhost:5000/register', {
         method: 'POST',
         headers: {
@@ -48,12 +70,12 @@ async function register() {
     })
 
     if (response.status >= 400 && response.status < 500) {
-        error.value = 'Email ou mot de passe incorrect'
+        errors.value.request = 'Email ou mot de passe incorrect'
         return
     }
 
     if (response.status >= 500) {
-        error.value = 'Erreur serveur'
+        errors.value.request = 'Erreur serveur'
         return
     }
 

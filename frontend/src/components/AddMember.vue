@@ -74,10 +74,6 @@ function close() {
     z-index: 10;
 }
 
-.error {
-    color: red;
-}
-
 .cancel-button {
     background-color: #ccc;
     color: #000;
