@@ -1,6 +1,6 @@
 <template>
     <div class="wrapper" @click="click">
-        <img v-if="props.value.pictures[0]" :src="props.value.pictures[0]" />
+        <img v-if="props.value.pictures && props.value.pictures[0]" :src="props.value.pictures[0]" />
         <div class="info">
             <h4>{{ props.value.name }}</h4>
             <p>{{ props.value.description }}</p>
@@ -20,7 +20,7 @@ function click() {
 
 <style scoped>
 .wrapper {
-    height: 275px;
+    height: auto;
     width: 224px;
 
     border: 1px solid rgba(0, 0, 0, 0.2);
@@ -28,6 +28,12 @@ function click() {
     background-color: #fffdfd;
 
     cursor: pointer;
+}
+
+img {
+    width: 100%;
+    height: 175px;
+    border-radius: 8px 8px 0 0;
 }
 
 .info {

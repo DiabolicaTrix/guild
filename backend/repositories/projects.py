@@ -7,14 +7,67 @@ def get_projects():
 
     results = []
     for (id, name, description, status, progress, created_at) in cursor:
-        results.append({
+        result = {
             'id': id,
             'name': name,
             'description': description,
             'status': status,
             'progress': progress,
             'created_at': created_at
-        })
+        }
+
+        query = '''SELECT path FROM projects_pictures WHERE project_id = %s'''
+        cursor = db.get(query, [id])
+
+        pictures = []
+        for (path) in cursor:
+            pictures.append(path)
+
+        print(pictures)
+
+        if len(pictures) > 0:
+            result['pictures'] = pictures
+
+        results.append(result)
+
+    return results
+
+
+def search_projects(search, themes, filters):
+    query = 'SELECT id, name, description, status, progress, created_at FROM projects WHERE name LIKE %s'
+    params = ['%' + search + '%']
+
+    if themes is not None and len(themes) > 0:
+        placeholders = ', '.join(['%s'] * len(themes))
+        query = query + ' AND theme_id IN (%s)' % placeholders
+        params.extend(themes)
+
+    cursor = db.get(query, params)
+
+    results = []
+    for (id, name, description, status, progress, created_at) in cursor:
+        result = {
+            'id': id,
+            'name': name,
+            'description': description,
+            'status': status,
+            'progress': progress,
+            'created_at': created_at
+        }
+
+        query = '''SELECT path FROM projects_pictures WHERE project_id = %s'''
+        cursor = db.get(query, [id])
+
+        pictures = []
+        for (path) in cursor:
+            pictures.append(path)
+
+        print(pictures)
+
+        if len(pictures) > 0:
+            result['pictures'] = pictures
+
+        results.append(result)
 
     return results
 

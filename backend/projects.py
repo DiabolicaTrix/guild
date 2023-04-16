@@ -12,6 +12,15 @@ projects_blueprint = Blueprint('projects', __name__)
 
 @projects_blueprint.route('/', methods=['GET'])
 def get_projects():
+    print(request.args)
+    search = request.args.get('search', None)
+    themes = request.args.getlist('themes')
+    filters = request.args.getlist('filters')
+
+    # If search, themes or filters is not none, search for projects
+    if search or themes or filters:
+        return repo.search_projects(search, themes, filters)
+
     return repo.get_projects()
 
 

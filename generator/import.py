@@ -16,17 +16,30 @@ conn = mysql.connector.connect(
 
 # Projects
 project_status = ['DONE', 'IN_PROGRESS', 'STARTING']
+themes = {}
 projects_count = 106
 with open("projects.csv", "r") as f:
     reader = csv.reader(f)
     for row in reader:
+        theme_id = themes.get(row[1])
+        if theme_id is None:
+            query = '''INSERT INTO themes (name, color) VALUES (%s, %s)'''
+            cursor = conn.cursor(buffered=True)
+            cursor.execute(
+                query, [row[1], '#' + str(random.randint(0, 999999))])
+            cursor.close()
+            conn.commit()
+            themes[row[1]] = cursor.lastrowid
+            theme_id = cursor.lastrowid
+
         status = random.choice(project_status)
-        query = '''INSERT INTO projects (name, theme, description, status, progress) VALUES (%s, %s, %s, %s, %s)'''
+        query = '''INSERT INTO projects (name, theme_id, description, status, progress) VALUES (%s, %s, %s, %s, %s)'''
         cursor = conn.cursor(buffered=True)
-        cursor.execute(query, [row[0], row[1], row[2], status,
+        cursor.execute(query, [row[0], theme_id, row[2], status,
                        100 if status == 'DONE' else random.randint(0, 100)])
         cursor.close()
         conn.commit()
+
 
 # Users
 

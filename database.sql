@@ -6,6 +6,8 @@ DROP TABLE IF EXISTS posts;
 DROP TABLE IF EXISTS messages;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS projects;
+DROP TABLE IF EXISTS themes;
+
 
 DROP TRIGGER IF EXISTS validate_percentage;
 DROP TRIGGER IF EXISTS send_notification_on_application;
@@ -15,21 +17,28 @@ DROP PROCEDURE IF EXISTS reject_application;
 CREATE TABLE IF NOT EXISTS users (
   id INT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(255),
-  email VARCHAR(255),
+  email VARCHAR(255) UNIQUE,
   role VARCHAR(255),
   password VARCHAR(255),
   picture VARCHAR(255),
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS themes (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255),
+  color VARCHAR(255)
+);
+
 CREATE TABLE IF NOT EXISTS projects (
   id INT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(255),
-  theme VARCHAR(255),
+  theme_id INT,
   description TEXT,
   status VARCHAR(255),
   progress INT,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (theme_id) REFERENCES themes(id)
 );
 
 CREATE TABLE IF NOT EXISTS projects_pictures (
